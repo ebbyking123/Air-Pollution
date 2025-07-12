@@ -1,0 +1,115 @@
+============================================================
+🌬️  AIR QUALITY PREDICTION ML MODEL
+============================================================
+Started at: 2025-07-12 14:55:03.794792
+
+1. Initializing components...
+
+2. Loading data...
+Loading data...
+Training data shape: (7649, 8)
+Test data shape: (2739, 7)
+
+Training data info:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 7649 entries, 0 to 7648
+Data columns (total 8 columns):
+ #   Column           Non-Null Count  Dtype  
+---  ------           --------------  -----  
+ 0   id               7649 non-null   int64  
+ 1   latitude         7636 non-null   float64
+ 2   longitude        7636 non-null   float64
+ 3   day_of_year      7649 non-null   int64  
+ 4   day_of_week      7649 non-null   int64  
+ 5   hour             7649 non-null   int64  
+ 6   month            7649 non-null   int64  
+ 7   pollution_value  7649 non-null   float64
+dtypes: float64(3), int64(5)
+memory usage: 478.2 KB
+None
+
+Training data statistics:
+                id     latitude  ...        month  pollution_value
+count  7649.000000  7636.000000  ...  7649.000000      7649.000000
+mean   3824.000000    31.880180  ...     7.106811        22.813227
+std    2208.220437    17.798504  ...     2.631424        46.650639
+min       0.000000   -74.187000  ...     1.000000         3.500000
+25%    1912.000000    28.945750  ...     5.000000         8.500000
+50%    3824.000000    35.594500  ...     8.000000        13.171778
+75%    5736.000000    40.862000  ...     9.000000        22.500000
+max    7648.000000    70.094000  ...    12.000000      1352.800000
+
+[8 rows x 8 columns]
+
+3. Analyzing data...
+📊 DATA ANALYSIS
+----------------------------------------
+Training Data Overview:
+  Shape: (7649, 8)
+  Missing values: 26
+  Duplicate rows: 0
+
+Test Data Overview:
+  Shape: (2739, 7)
+  Missing values: 0
+
+Target Variable (pollution_value) Statistics:
+  Mean: 22.81
+  Median: 13.17
+  Std: 46.65
+  Min: 3.50
+  Max: 1352.80
+  Skewness: 13.57
+
+Feature Statistics:
+  latitude: min=-74.19, max=70.09, unique=6102
+  longitude: min=-161.76, max=153.39, unique=6628
+  hour: min=0.00, max=23.00, unique=24
+  day_of_week: min=0.00, max=6.00, unique=7
+  month: min=1.00, max=12.00, unique=12
+  day_of_year: min=1.00, max=366.00, unique=359
+
+Correlation with target:
+longitude      0.071034
+day_of_year    0.046331
+month          0.045965
+day_of_week    0.034287
+hour           0.006685
+id            -0.008408
+latitude      -0.067998
+Name: pollution_value, dtype: float64
+
+4. Preparing data...
+Preparing data for training...
+Engineering features...
+Traceback (most recent call last):
+  File "/app/main.py", line 99, in <module>
+    main()
+  File "/app/main.py", line 45, in main
+    X_train, X_val, y_train, y_val, X_test = data_processor.prepare_data(scale_features=True)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/data_processor.py", line 140, in prepare_data
+    train_processed = self.engineer_features(self.train_df, is_training=True)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/data_processor.py", line 118, in engineer_features
+    df_processed = self.create_spatial_features(df_processed)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/data_processor.py", line 70, in create_spatial_features
+    self.spatial_clusterer.fit(spatial_data)
+  File "/root/.venv/lib/python3.11/site-packages/sklearn/base.py", line 1152, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/sklearn/cluster/_kmeans.py", line 1475, in fit
+    X = self._validate_data(
+        ^^^^^^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/sklearn/base.py", line 605, in _validate_data
+    out = check_array(X, input_name="X", **check_params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 957, in check_array
+    _assert_all_finite(
+  File "/root/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 122, in _assert_all_finite
+    _assert_all_finite_element_wise(
+  File "/root/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 171, in _assert_all_finite_element_wise
+    raise ValueError(msg_err)
+ValueError: Input X contains NaN.
+KMeans does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values

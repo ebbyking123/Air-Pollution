@@ -63,10 +63,21 @@ class DataProcessor:
         """Create spatial features from coordinates"""
         df_copy = df.copy()
         
+        # Clean data - remove NaN values
+        df_copy = df_copy.dropna(subset=['latitude', 'longitude'])
+        
         # Create spatial clusters
         if self.spatial_clusterer is None:
             self.spatial_clusterer = KMeans(n_clusters=50, random_state=self.config.RANDOM_STATE)
             spatial_data = df_copy[['latitude', 'longitude']].values
+            
+            # Check for NaN values before fitting
+            if np.any(np.isnan(spatial_data)):
+                print("Warning: NaN values found in spatial data, using median imputation")
+                from sklearn.impute import SimpleImputer
+                imputer = SimpleImputer(strategy='median')
+                spatial_data = imputer.fit_transform(spatial_data)
+            
             self.spatial_clusterer.fit(spatial_data)
         
         # Add cluster labels
