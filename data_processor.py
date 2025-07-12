@@ -23,6 +23,22 @@ class DataProcessor:
         try:
             self.train_df = pd.read_csv(train_path)
             self.test_df = pd.read_csv(test_path)
+            
+            # Clean data - handle NaN values
+            print("Cleaning data...")
+            
+            # Fill NaN values with appropriate defaults
+            numeric_columns = ['latitude', 'longitude', 'day_of_year', 'day_of_week', 'hour', 'month']
+            for col in numeric_columns:
+                if col in self.train_df.columns:
+                    self.train_df[col] = self.train_df[col].fillna(self.train_df[col].median())
+                if col in self.test_df.columns:
+                    self.test_df[col] = self.test_df[col].fillna(self.test_df[col].median())
+            
+            # Handle pollution_value NaN in training data
+            if 'pollution_value' in self.train_df.columns:
+                self.train_df['pollution_value'] = self.train_df['pollution_value'].fillna(self.train_df['pollution_value'].median())
+            
             print(f"Training data shape: {self.train_df.shape}")
             print(f"Test data shape: {self.test_df.shape}")
             
