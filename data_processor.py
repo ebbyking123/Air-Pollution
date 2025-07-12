@@ -81,7 +81,16 @@ class DataProcessor:
             self.spatial_clusterer.fit(spatial_data)
         
         # Add cluster labels
-        spatial_clusters = self.spatial_clusterer.predict(df_copy[['latitude', 'longitude']].values)
+        spatial_data_current = df_copy[['latitude', 'longitude']].values
+        
+        # Handle NaN values in current data
+        if np.any(np.isnan(spatial_data_current)):
+            print("Warning: NaN values found in current spatial data, using median imputation")
+            from sklearn.impute import SimpleImputer
+            imputer = SimpleImputer(strategy='median')
+            spatial_data_current = imputer.fit_transform(spatial_data_current)
+        
+        spatial_clusters = self.spatial_clusterer.predict(spatial_data_current)
         df_copy['spatial_cluster'] = spatial_clusters
         
         # Add distance from centroid
