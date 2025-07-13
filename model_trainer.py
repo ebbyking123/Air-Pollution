@@ -118,10 +118,10 @@ class ModelTrainer:
         # Use a smaller grid for faster tuning
         if model_name == 'random_forest':
             param_grid = {
-                'n_estimators': [100, 200],
-                'max_depth': [10, 20, None],
-                'min_samples_split': [2, 5],
-                'max_features': ['sqrt', 'log2']
+                'n_estimators': [200],
+                'max_depth': [20],
+                'min_samples_split': [2],
+                'max_features': ['sqrt']
             }
         
         grid_search = GridSearchCV(
