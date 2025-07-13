@@ -79,34 +79,25 @@ class DataProcessor:
         """Create spatial features from coordinates"""
         df_copy = df.copy()
         
-        # Clean data - remove NaN values
-        df_copy = df_copy.dropna(subset=['latitude', 'longitude'])
+        # Handle NaN values with imputation instead of dropping
+        from sklearn.impute import SimpleImputer
+        spatial_imputer = SimpleImputer(strategy='median')
+        
+        # Prepare spatial data for clustering
+        spatial_cols = ['latitude', 'longitude']
+        spatial_data = df_copy[spatial_cols].values
+        
+        # Impute missing values
+        spatial_data_clean = spatial_imputer.fit_transform(spatial_data)
+        df_copy[spatial_cols] = spatial_data_clean
         
         # Create spatial clusters
         if self.spatial_clusterer is None:
             self.spatial_clusterer = KMeans(n_clusters=50, random_state=self.config.RANDOM_STATE)
-            spatial_data = df_copy[['latitude', 'longitude']].values
-            
-            # Check for NaN values before fitting
-            if np.any(np.isnan(spatial_data)):
-                print("Warning: NaN values found in spatial data, using median imputation")
-                from sklearn.impute import SimpleImputer
-                imputer = SimpleImputer(strategy='median')
-                spatial_data = imputer.fit_transform(spatial_data)
-            
-            self.spatial_clusterer.fit(spatial_data)
+            self.spatial_clusterer.fit(spatial_data_clean)
         
         # Add cluster labels
-        spatial_data_current = df_copy[['latitude', 'longitude']].values
-        
-        # Handle NaN values in current data
-        if np.any(np.isnan(spatial_data_current)):
-            print("Warning: NaN values found in current spatial data, using median imputation")
-            from sklearn.impute import SimpleImputer
-            imputer = SimpleImputer(strategy='median')
-            spatial_data_current = imputer.fit_transform(spatial_data_current)
-        
-        spatial_clusters = self.spatial_clusterer.predict(spatial_data_current)
+        spatial_clusters = self.spatial_clusterer.predict(spatial_data_clean)
         df_copy['spatial_cluster'] = spatial_clusters
         
         # Add distance from centroid
