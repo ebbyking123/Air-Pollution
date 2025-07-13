@@ -123,6 +123,13 @@ class ModelTrainer:
                 'min_samples_split': [2],
                 'max_features': ['sqrt']
             }
+        else:
+            # Use simplified grid from config for other models
+            config_grid = self.config.MODELS_CONFIG.get(model_name, {})
+            param_grid = {}
+            for param, values in config_grid.items():
+                # Take only first value to speed up
+                param_grid[param] = [values[0] if isinstance(values, list) else values]
         
         grid_search = GridSearchCV(
             base_model, 
